@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
@@ -9,6 +9,14 @@ import Footer from './components/Footer';
 export default function App() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [isDark, setIsDark] = useState(() => localStorage.getItem('theme') === 'dark');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
+
+  const toggleTheme = useCallback(() => setIsDark(d => !d), []);
 
   const handleUpload = useCallback((file: File) => {
     const url = URL.createObjectURL(file);
@@ -23,7 +31,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-cream grain-overlay">
-      <Navbar />
+      <Navbar isDark={isDark} onToggleTheme={toggleTheme} />
       <HeroSection onUpload={handleUpload} />
       <Features />
       <Footer />

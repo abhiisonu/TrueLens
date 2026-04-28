@@ -6,7 +6,9 @@ import {
   CheckCircle2,
   AlertTriangle,
   RefreshCw,
+  GitBranch,
 } from 'lucide-react';
+import PipelineModal, { type PipelineData } from './PipelineModal';
 
 export interface AnalysisResult {
   isReal: boolean;
@@ -38,6 +40,9 @@ export default function AnalysisOverlay({ imageUrl, imageFile, onClose }: Analys
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [statusIndex, setStatusIndex] = useState(0);
+  const [pipelineOpen, setPipelineOpen] = useState(false);
+  const [rawPipelineData, setRawPipelineData] = useState<PipelineData | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startAnalysis = useCallback(async () => {
@@ -117,12 +122,20 @@ export default function AnalysisOverlay({ imageUrl, imageFile, onClose }: Analys
         details: mappedDetails,
       };
 
+      // Store raw data for pipeline modal
+      setRawPipelineData({
+        label: data.label,
+        confidence: data.confidence || 0,
+        latency: data.latency || '',
+        detail: data.detail || { neural: {}, forensics: {} },
+      });
+
       setResult(backendResult);
       setTimeout(() => setPhase('results'), 400);
 
     } catch (err: any) {
       if (intervalRef.current) clearInterval(intervalRef.current);
-      alert('Analysis failed: ' + err.message);
+      setErrorMsg(err.message || 'An unexpected error occurred.');
       handleReset();
     }
   }, [imageFile]);
@@ -178,6 +191,27 @@ export default function AnalysisOverlay({ imageUrl, imageFile, onClose }: Analys
       >
         <X className="w-5 h-5 text-cream" />
       </button>
+
+      {/* Error toast */}
+      <AnimatePresence>
+        {errorMsg && (
+          <motion.div
+            key="error-toast"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.35 }}
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 px-5 py-3 rounded-2xl shadow-xl"
+            style={{ background: 'rgba(30,10,10,0.96)', border: '1px solid rgba(199,91,58,0.45)', backdropFilter: 'blur(12px)' }}
+          >
+            <AlertTriangle className="w-4 h-4 text-terracotta flex-shrink-0" />
+            <span className="text-sm text-cream/80 font-medium">Analysis failed: {errorMsg}</span>
+            <button onClick={() => setErrorMsg(null)} className="text-cream/40 hover:text-cream/80 transition-colors ml-1">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Main content */}
       <AnimatePresence mode="wait">
@@ -374,6 +408,25 @@ export default function AnalysisOverlay({ imageUrl, imageFile, onClose }: Analys
                     ? 'This image appears to be a genuine photograph with natural characteristics.'
                     : 'This image shows patterns and artifacts consistent with AI generation.'}
                 </motion.p>
+
+                {/* View Pipeline button */}
+                <motion.button
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.45 }}
+                  onClick={() => setPipelineOpen(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200"
+                  style={{
+                    background: result.isReal ? 'rgba(123,158,107,0.12)' : 'rgba(199,91,58,0.12)',
+                    border: result.isReal ? '1px solid rgba(123,158,107,0.35)' : '1px solid rgba(199,91,58,0.35)',
+                    color: result.isReal ? '#5a8a48' : '#b84a29',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.opacity = '0.75'; }}
+                  onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
+                >
+                  <GitBranch className="w-3.5 h-3.5" />
+                  View Detection Pipeline
+                </motion.button>
               </div>
 
               {/* Confidence + details */}
@@ -489,6 +542,17 @@ export default function AnalysisOverlay({ imageUrl, imageFile, onClose }: Analys
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ── Pipeline Modal ── */}
+      {rawPipelineData && (
+        <PipelineModal
+          open={pipelineOpen}
+          data={rawPipelineData}
+          imageUrl={imageUrl}
+          isReal={result?.isReal ?? true}
+          onClose={() => setPipelineOpen(false)}
+        />
+      )}
     </motion.div>
   );
 }

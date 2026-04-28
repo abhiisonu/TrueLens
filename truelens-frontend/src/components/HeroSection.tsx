@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Upload, ImageIcon, Sparkles } from 'lucide-react';
+import { Upload, ImageIcon } from 'lucide-react';
 
 interface HeroSectionProps {
   onUpload: (file: File) => void;
@@ -43,7 +43,7 @@ export default function HeroSection({ onUpload }: HeroSectionProps) {
   );
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-24 pb-16 overflow-hidden">
+    <section className="relative min-h-screen flex flex-col items-center justify-start px-6 pt-16 pb-16 overflow-hidden">
       {/* Decorative organic blobs */}
       <div className="absolute top-16 -left-40 w-[500px] h-[500px] bg-terracotta/[0.07] blob-1 animate-float pointer-events-none" />
       <div className="absolute bottom-10 -right-40 w-[420px] h-[420px] bg-sage/[0.07] blob-2 animate-float-reverse pointer-events-none" />
@@ -81,7 +81,7 @@ export default function HeroSection({ onUpload }: HeroSectionProps) {
             <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-terracotta via-terracotta-light to-gold">
               Truth
             </span>
-            <span className="absolute -bottom-1 left-0 right-0 h-3 bg-gold/20 -skew-x-3 rounded-sm" />
+            <span className="absolute bottom-1 left-0 right-0 h-3 bg-gold/20 -skew-x-3 rounded-sm" />
           </span>
           <br />
           behind every pixel
