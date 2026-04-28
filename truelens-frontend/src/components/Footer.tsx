@@ -62,7 +62,7 @@ export default function Footer() {
         {/* Divider */}
         <div className="border-t border-cream/[0.06] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-cream/30 text-sm">
-            © 2025 TrueLens. All rights reserved.
+            © 2026 TrueLens. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <a href="#" className="text-cream/30 hover:text-cream/60 text-sm transition-colors">

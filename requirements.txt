@@ -1,5 +1,4 @@
 flask
-requests
 pillow
 werkzeug
 torch>=2.0.0

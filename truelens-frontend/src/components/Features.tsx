@@ -115,9 +115,9 @@ export default function Features() {
           className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6"
         >
           {[
-            { value: '~90%', label: 'Accuracy Rate' },
-            { value: '~5s', label: 'Analysis Time' },
-            { value: '10k+', label: 'Images Analyzed' },
+            { value: '70+ %', label: 'Accuracy Rate' },
+            { value: '~2s', label: 'Analysis Time' },
+            { value: '7', label: 'Detection Signals' },
             { value: '5', label: 'Detection Layers' },
           ].map((stat) => (
             <div key={stat.label} className="text-center">

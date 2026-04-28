@@ -1,6 +1,5 @@
 import numpy as np
 import cv2
-import torch
 import os
 from PIL import Image, ImageFilter, ImageStat
 from typing import Tuple, Optional
@@ -136,13 +135,7 @@ class ForensicAuditorFixes:
 
         return max(faces, key=lambda f: f[2] * f[3])
 
-    # ==========================================
-    # SECTION 3: Neural Stability
-    # ==========================================
-    @staticmethod
-    def stable_softmax(logits: torch.Tensor, temperature: float = 1.0) -> torch.Tensor:
-        logits_f32 = logits.to(torch.float32) / temperature
-        return torch.nn.functional.softmax(logits_f32, dim=-1)
+
 
     # ==========================================
     # SECTION 4: Multi-Pass ELA (Calibrated v3)

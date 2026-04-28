@@ -465,7 +465,7 @@ export default function AnalysisOverlay({ imageUrl, imageFile, onClose }: Analys
                   className="text-[11px] text-warm-gray text-center mb-6 leading-relaxed"
                 >
                   Results are probabilistic and should be used as a guide. No AI detector is
-                  100% accurate. Always use human judgment for critical decisions.
+                  70+ % accurate. Always use human judgment for critical decisions.
                 </motion.p>
 
                 {/* Action buttons */}

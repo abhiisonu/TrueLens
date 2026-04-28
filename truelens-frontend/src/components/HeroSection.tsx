@@ -131,7 +131,7 @@ export default function HeroSection({ onUpload }: HeroSectionProps) {
 
           <div className="flex items-center gap-2 text-xs text-warm-gray">
             <ImageIcon className="w-3.5 h-3.5" />
-            <span>JPG, PNG, WEBP — up to 10MB</span>
+            <span>JPG, PNG, WEBP — up to 20MB</span>
           </div>
 
           <input

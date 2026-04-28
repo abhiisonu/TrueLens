@@ -27,8 +27,6 @@ static/uploads/*
 # Node / React
 node_modules/
 dist/
-artistic-deepfake-detector-interface/node_modules/
-artistic-deepfake-detector-interface/dist/
 
 # MacOS / IDE
 .DS_Store

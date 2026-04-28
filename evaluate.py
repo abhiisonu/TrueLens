@@ -6,10 +6,6 @@ Run this to evaluate the local forensic engine on your test dataset.
 
 Usage:
     python evaluate.py --fake-dir "data/v1_fake" --real-dir "data/v1_real"
-    python evaluate.py --fake-dir "data/v1_fake" --real-dir "data/v1_real" --api
-
-Options:
-    --api    Use Sightengine API instead of local model
 """
 
 import os
@@ -31,14 +27,14 @@ def load_images_from_dir(directory: str):
     return files
 
 
-def evaluate(scanner: ForensicScanner, fake_dir: str, real_dir: str, use_api: bool = False):
+def evaluate(scanner: ForensicScanner, fake_dir: str, real_dir: str):
     fake_images = load_images_from_dir(fake_dir)
     real_images = load_images_from_dir(real_dir)
 
     print(f"\n{'='*70}")
     print("TRUELENS FORENSIC SUITE — BATCH EVALUATION")
     print(f"{'='*70}")
-    print(f"Mode: {'API (Sightengine)' if use_api else 'Local Forensic Engine'}")
+    print(f"Mode: Local Forensic Engine")
     print(f"Fake samples: {len(fake_images)}")
     print(f"Real samples: {len(real_images)}")
     print(f"{'='*70}\n")
@@ -165,7 +161,6 @@ def main():
     parser = argparse.ArgumentParser(description="Evaluate TrueLens Forensic Suite")
     parser.add_argument("--fake-dir", default="data/v1_fake", help="Directory with fake images")
     parser.add_argument("--real-dir", default="data/v1_real", help="Directory with real images")
-    parser.add_argument("--api", action="store_true", help="Use Sightengine API instead of local model")
     args = parser.parse_args()
 
     print("Initializing Forensic Scanner...")
@@ -178,7 +173,7 @@ def main():
         print(f"ERROR: Real directory not found: {args.real_dir}")
         sys.exit(1)
 
-    evaluate(scanner, args.fake_dir, args.real_dir, use_api=args.api)
+    evaluate(scanner, args.fake_dir, args.real_dir)
 
 
 if __name__ == "__main__":

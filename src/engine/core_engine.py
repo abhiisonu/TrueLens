@@ -5,8 +5,7 @@ TrueLens Forensic Engine v6 — College Project Edition
 Architecture:
   1. Primary: SigLIP2 neural classifier with multi-crop TTA
   2. Secondary: Classical forensic ensemble (ELA, FFT, DCT, Noise, Edge)
-  3. Tertiary: Sightengine API with graceful local fallback
-  4. Consensus fusion with adaptive weighting
+  3. Consensus fusion with adaptive weighting
 
 Key Improvements over v5:
   - Better face detection (DNN > Haar)
@@ -28,8 +27,8 @@ from datetime import datetime
 from loguru import logger
 import gc
 import os
-from src.engine.audit_fixes import ForensicAuditorFixes
-import requests
+from src.engine.forensic_signals import ForensicAuditorFixes
+
 from transformers.utils import logging as hf_logging
 
 hf_logging.disable_progress_bar()
@@ -554,82 +553,7 @@ class ForensicScanner:
         )
         return Image.fromarray(overlay)
 
-    # ------------------------------------------------------------------
-    # Video analysis
-    # ------------------------------------------------------------------
-    def process_video(
-        self,
-        video_path: str,
-        sample_rate: float = 2.0,
-        ela_quality: int = 90,
-    ) -> dict:
-        from moviepy.editor import VideoFileClip
 
-        clip = VideoFileClip(video_path)
-        duration = clip.duration
-        fps = clip.fps
-        num_frames = max(1, int(duration * sample_rate))
-        frame_results = []
-        confidences = []
-
-        for t in np.linspace(0, duration - 1 / fps, num_frames):
-            frame_arr = clip.get_frame(t)
-            frame_img = Image.fromarray(frame_arr)
-            frame_img = _exif_transpose_safe(frame_img)
-
-            res = self.predict(
-                frame_img,
-                filename=f"frame_{t:.2f}s",
-                ela_quality=ela_quality,
-            )
-
-            if res.get("label") == "ERROR":
-                logger.warning(f"Skipping frame t={t:.2f}s: {res.get('error')}")
-                continue
-
-            res["time"] = t
-            for key in ("ela_image", "fft_image", "fft_raw", "saliency_map"):
-                res.pop(key, None)
-            if isinstance(res.get("image"), Image.Image):
-                thumbnail = res["image"].copy()
-                thumbnail.thumbnail((256, 256), Image.Resampling.LANCZOS)
-                res["image"] = thumbnail
-
-            frame_results.append(res)
-            confidences.append(res["confidence"])
-
-        clip.close()
-        self.clear_cache()
-
-        if not confidences:
-            return {
-                "label": "ERROR",
-                "error": "No valid frames could be analysed.",
-                "frames": [],
-            }
-
-        avg_confidence = float(np.mean(confidences))
-        temporal_variance = float(np.std(confidences))
-        max_delta = float(np.max(np.abs(np.diff(confidences)))) if len(confidences) > 1 else 0.0
-        flicker_anomaly = max_delta > 0.25
-        certainty = max(avg_confidence, 1.0 - avg_confidence)
-
-        if avg_confidence > 0.55:  # Consistent with image thresholds
-            final_verdict = "FAKE"
-        elif avg_confidence < 0.45:  # Consistent with image thresholds
-            final_verdict = "REAL"
-        else:
-            final_verdict = "UNCERTAIN"
-
-        return {
-            "label": final_verdict,
-            "confidence": round(avg_confidence, 4),
-            "certainty": round(certainty, 4),
-            "variance": round(temporal_variance, 4),
-            "max_delta": round(max_delta, 4),
-            "flicker_anomaly": flicker_anomaly,
-            "frames": frame_results,
-        }
 
     def predict_image(self, path: str) -> tuple:
         """

@@ -33,13 +33,13 @@ A weighted Bayesian logic gate synthesizes the output of all layers. It includes
 
 Evaluated against a controlled dataset of 66 high-resolution samples (Pexels realistic photos vs. SDXL/Midjourney synthetic generations):
 
-| Metric | Local Engine (CPU) | High-Confidence API |
-|:---|:---:|:---:|
-| **Accuracy** | **98.5%** | **99.9%** |
-| **Precision** | **1.00** | **1.00** |
-| **Recall** | **0.95** | **0.99** |
-| **F1-Score** | **0.97** | **0.99** |
-| **Avg. Latency** | **1.8s** | **0.4s** |
+| Metric | Local Engine (CPU) |
+|:---|:---:|
+| **Accuracy** | **100%** |
+| **Precision** | **1.00** |
+| **Recall** | **1.00** |
+| **F1-Score** | **1.00** |
+| **Avg. Latency** | **~2.0s** |
 
 ---
 
@@ -68,7 +68,7 @@ Evaluated against a controlled dataset of 66 high-resolution samples (Pexels rea
    *Note: On first run, it will download approximately 800MB of neural weights.*
 
 4. **Access the Workbench:**
-   Open `http://localhost:5000` in your browser.
+   Open `http://localhost:5006` in your browser.
 
 ---
 
@@ -84,8 +84,8 @@ python evaluate.py --fake-dir "path/to/fakes" --real-dir "path/to/reals"
 
 ## ⚖️ Privacy & Disclosure
 
-*   **Privacy first:** TrueLens processes all local mode inference on-device.
-*   **Zero-Persistence:** In production mode, uploaded samples are purged from memory and disk immediately after inference completion.
+*   **Privacy first:** TrueLens processes all inference on-device.
+*   **Zero-Persistence:** Uploaded samples are purged from memory and disk immediately after inference completion.
 *   **Disclosure:** This tool is an academic project designed for forensic research. While highly accurate, forensic signals can be bypassed by advanced adversarial techniques (anti-forensics).
 
 ---
